@@ -51,7 +51,7 @@ See the [pi documentation](https://github.com/earendil-works/pi-coding-agent) fo
 use {
     "qasimstatic/pie.nvim",
     config = function()
-        require("pie.nvim").setup()
+        require("pie").setup()
     end,
 }
 ```

@@ -2,7 +2,7 @@ local M = {}
 
 -- Build pi command args
 local function build_cmd(prompt_text, system_prompt)
-    local cfg = require("pie.nvim").config
+    local cfg = require("pie").config
     local args = {
         cfg.cmd,
         "-p",
@@ -20,7 +20,7 @@ end
 
 -- Run pi in print mode. Calls on_result(text) on success, on_error(msg) on failure.
 function M.run(prompt_text, system_prompt, on_result, on_error)
-    local cfg = require("pie.nvim").config
+    local cfg = require("pie").config
 
     -- Guard: pi must be executable
     if vim.fn.executable(cfg.cmd) ~= 1 then

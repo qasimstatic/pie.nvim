@@ -24,23 +24,23 @@ function M.setup(opts)
     M.config = vim.tbl_deep_extend("force", M.config, opts or {})
 
     vim.keymap.set("v", M.config.keymap, function()
-        require("pie.nvim.edit").request()
+        require("pie.edit").request()
     end, { desc = "pie: inline edit selection" })
 
     vim.keymap.set("n", M.config.keymap, function()
-        require("pie.nvim.edit").request()
+        require("pie.edit").request()
     end, { desc = "pie: inline edit current line" })
 
     vim.keymap.set({ "n", "v" }, M.config.abort_keymap, function()
-        require("pie.nvim.edit").abort()
+        require("pie.edit").abort()
     end, { desc = "pie: abort request" })
 
     vim.api.nvim_create_user_command("PieEdit", function()
-        require("pie.nvim.edit").request()
+        require("pie.edit").request()
     end, { desc = "pie: inline edit" })
 
     vim.api.nvim_create_user_command("PieAbort", function()
-        require("pie.nvim.edit").abort()
+        require("pie.edit").abort()
     end, { desc = "pie: abort request" })
 
     -- Check that pi is available

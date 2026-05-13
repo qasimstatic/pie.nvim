@@ -1,35 +1,35 @@
--- Smoke tests for pie.nvim
+-- Smoke tests for pie
 -- Run: nvim --headless -u test/init.lua -c "PlenaryBustedDirectory test/"
 
 local eq = assert.are.same
 
-describe("pie.nvim", function()
+describe("pie", function()
     before_each(function()
-        package.loaded["pie.nvim"] = nil
-        package.loaded["pie.nvim.client"] = nil
-        package.loaded["pie.nvim.edit"] = nil
+        package.loaded["pie"] = nil
+        package.loaded["pie.client"] = nil
+        package.loaded["pie.edit"] = nil
     end)
 
     describe("setup", function()
         it("loads without errors", function()
-            local ok, err = pcall(require, "pie.nvim")
+            local ok, err = pcall(require, "pie")
             assert.is_true(ok, err)
         end)
 
         it("setup() runs without errors", function()
-            local pie = require("pie.nvim")
+            local pie = require("pie")
             local ok, err = pcall(pie.setup)
             assert.is_true(ok, err)
         end)
 
         it("merges custom config", function()
-            local pie = require("pie.nvim")
+            local pie = require("pie")
             pie.setup({ extra_args = { "--provider", "anthropic" } })
             eq({ "--provider", "anthropic" }, pie.config.extra_args)
         end)
 
         it("preserves defaults for unset options", function()
-            local pie = require("pie.nvim")
+            local pie = require("pie")
             pie.setup({ extra_args = {} })
             eq("pi", pie.config.cmd)
             eq("<leader>ai", pie.config.keymap)
@@ -40,14 +40,14 @@ describe("pie.nvim", function()
         end)
 
         it("creates PieEdit command", function()
-            local pie = require("pie.nvim")
+            local pie = require("pie")
             pie.setup()
             local cmds = vim.api.nvim_get_commands({})
             assert.is_not_nil(cmds["PieEdit"])
         end)
 
         it("creates PieAbort command", function()
-            local pie = require("pie.nvim")
+            local pie = require("pie")
             pie.setup()
             local cmds = vim.api.nvim_get_commands({})
             assert.is_not_nil(cmds["PieAbort"])
@@ -56,16 +56,16 @@ describe("pie.nvim", function()
 
     describe("client", function()
         it("has run() function", function()
-            require("pie.nvim").setup()
-            local client = require("pie.nvim.client")
+            require("pie").setup()
+            local client = require("pie.client")
             assert.is_function(client.run)
         end)
     end)
 
     describe("edit", function()
         it("has request() and abort()", function()
-            require("pie.nvim").setup()
-            local edit = require("pie.nvim.edit")
+            require("pie").setup()
+            local edit = require("pie.edit")
             assert.is_function(edit.request)
             assert.is_function(edit.abort)
         end)
@@ -95,7 +95,7 @@ describe("pie.nvim", function()
 
     describe("health", function()
         it("health module loads", function()
-            require("pie.nvim").setup()
+            require("pie").setup()
             local health = require("pie.health")
             assert.is_function(health.check)
         end)

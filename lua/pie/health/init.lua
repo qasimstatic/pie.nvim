@@ -1,9 +1,9 @@
 local M = {}
 
 function M.check()
-    vim.health.start("pie.nvim")
+    vim.health.start("pie")
 
-    local cfg = require("pie.nvim").config
+    local cfg = require("pie").config
 
     -- Check pi binary
     if vim.fn.executable(cfg.cmd) == 1 then
@@ -41,7 +41,7 @@ function M.check()
         if lhs ~= "" and not lhs:match("pie") then
             vim.health.warn(
                 cfg.keymap .. " is already mapped in " .. mode .. " mode: " .. lhs,
-                { "Set a different keymap: require('pie.nvim').setup({ keymap = '<leader>e' })" }
+                { "Set a different keymap: require('pie').setup({ keymap = '<leader>e' })" }
             )
         end
     end

@@ -12,7 +12,7 @@ local M = {}
 ---@param close_cb function Callback when user closes
 ---@return PieFloat
 function M.create_float(submit_cb, close_cb)
-    local cfg = require("pie.nvim").config
+    local cfg = require("pie").config
     local width = cfg.float_width
     local height = cfg.float_height
 

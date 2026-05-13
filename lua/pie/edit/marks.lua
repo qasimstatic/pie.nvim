@@ -1,4 +1,4 @@
-local format = require("pie.nvim.edit.format")
+local format = require("pie.edit.format")
 local ns = vim.api.nvim_create_namespace("pie")
 
 local M = {}

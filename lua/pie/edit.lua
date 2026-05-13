@@ -1,7 +1,7 @@
-local utils = require("pie.nvim.edit.utils")
-local marks = require("pie.nvim.edit.marks")
-local ui = require("pie.nvim.edit.ui")
-local client = require("pie.nvim.client")
+local utils = require("pie.edit.utils")
+local marks = require("pie.edit.marks")
+local ui = require("pie.edit.ui")
+local client = require("pie.client")
 
 local M = {}
 
@@ -94,7 +94,7 @@ local function submit_edit()
 
     req.handle = client.run(
         prompt,
-        require("pie.nvim").config.system_prompt,
+        require("pie").config.system_prompt,
         function(result)
             vim.schedule(function()
                 ui.clear_spinner(req.spinner)
