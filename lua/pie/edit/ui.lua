@@ -72,15 +72,17 @@ function M.create_float(submit_cb, close_cb)
             -- First <C-c>: clear the buffer
             vim.api.nvim_buf_set_lines(buf, 0, -1, false, {})
             ctrl_c_count = 1
-            if ctrl_c_timer then
+            if ctrl_c_timer and not ctrl_c_timer:is_closing() then
                 ctrl_c_timer:stop()
                 ctrl_c_timer:close()
             end
             ctrl_c_timer = vim.uv.new_timer()
             ctrl_c_timer:start(1000, 0, function()
                 ctrl_c_count = 0
-                ctrl_c_timer:stop()
-                ctrl_c_timer:close()
+                if ctrl_c_timer and not ctrl_c_timer:is_closing() then
+                    ctrl_c_timer:stop()
+                    ctrl_c_timer:close()
+                end
                 ctrl_c_timer = nil
             end)
             vim.cmd("startinsert!")
@@ -89,7 +91,7 @@ function M.create_float(submit_cb, close_cb)
             ctrl_c_count = ctrl_c_count + 1
             if ctrl_c_count >= 2 then
                 vim.cmd("stopinsert")
-                if ctrl_c_timer then
+                if ctrl_c_timer and not ctrl_c_timer:is_closing() then
                     ctrl_c_timer:stop()
                     ctrl_c_timer:close()
                 end
@@ -130,8 +132,10 @@ function M.start_spinner(buf, selection, top_mark)
     local timer = vim.uv.new_timer()
     timer:start(0, 80, vim.schedule_wrap(function()
         if not vim.api.nvim_buf_is_valid(buf) then
-            timer:stop()
-            timer:close()
+            if not timer:is_closing() then
+                timer:stop()
+                timer:close()
+            end
             return
         end
         frame = (frame % #spinner_frames) + 1
@@ -157,7 +161,7 @@ end
 function M.clear_spinner(spinner)
     if not spinner then return end
     
-    if spinner.timer then
+    if spinner.timer and not spinner.timer:is_closing() then
         spinner.timer:stop()
         spinner.timer:close()
     end
