@@ -40,12 +40,6 @@ function M.create_float(submit_cb, close_cb)
     vim.wo[win].number = false
     vim.wo[win].relativenumber = false
 
-    -- Prompt icon on first line (inline so cursor appears after it)
-    vim.api.nvim_buf_set_extmark(buf, ns, 0, 0, {
-        virt_text = { { "> ", "PiePromptIcon" } },
-        virt_text_pos = "inline",
-    })
-
     -- Submit keymaps
     local function submit()
         vim.cmd("stopinsert")
@@ -53,7 +47,6 @@ function M.create_float(submit_cb, close_cb)
     end
 
     vim.keymap.set({ "i", "n", "v" }, "<C-s>", submit, { buffer = buf, desc = "pie: submit edit" })
-    vim.keymap.set("i", "<C-CR>", submit, { buffer = buf, desc = "pie: submit edit" })
     vim.keymap.set("n", "<CR>", submit_cb, { buffer = buf, desc = "pie: submit edit" })
 
     -- Close/clear keymaps

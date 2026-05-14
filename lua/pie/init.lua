@@ -6,7 +6,7 @@ M.config = {
     -- Extra args passed to pi (e.g. {"--provider", "anthropic", "--model", "sonnet"})
     extra_args = {},
     -- Keymap to trigger inline edit (also toggles the float closed)
-    keymap = "<leader>ai",
+    keymap = "<leader>ie",
     -- Keymap to abort a running request
     abort_keymap = "<C-c>",
     -- Width of the floating input window
