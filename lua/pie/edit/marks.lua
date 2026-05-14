@@ -7,25 +7,27 @@ local M = {}
 ---@field top_mark number
 ---@field bottom_mark number
 
----Place extmarks above and below the selection
+---Place extmarks above and below the selection to track it resiliently
 ---@param buf number
 ---@param selection PieSelection
 ---@return PieMarks
 function M.place_marks(buf, selection)
-    local top_mark, bottom_mark
+    local top_mark
 
-    -- Top mark: on the line above the selection (or line 0 if selection starts at 1)
-    local top_line = math.max(0, selection.start_line - 2) -- 0-indexed
-    if top_line == selection.start_line - 1 then
-        top_mark = vim.api.nvim_buf_set_extmark(buf, ns, top_line, 0, {})
+    if selection.start_line <= 1 then
+        -- Selection starts at line 1: place top mark at row 0, col 0
+        -- In replace, we use top_pos[1] directly (no +1) since it IS the selection start
+        top_mark = vim.api.nvim_buf_set_extmark(buf, ns, 0, 0, {})
     else
-        local line_text = vim.fn.getline(selection.start_line - 1)
-        top_mark = vim.api.nvim_buf_set_extmark(buf, ns, top_line, #line_text, {})
+        -- Place top mark at end of the line ABOVE the selection
+        local above_line = selection.start_line - 1
+        local line_text = vim.fn.getline(above_line)
+        top_mark = vim.api.nvim_buf_set_extmark(buf, ns, above_line - 1, #line_text, {})
     end
 
     -- Bottom mark: end of the last line of selection
     local last_line = vim.fn.getline(selection.end_line)
-    bottom_mark = vim.api.nvim_buf_set_extmark(buf, ns, selection.end_line - 1, #last_line, {})
+    local bottom_mark = vim.api.nvim_buf_set_extmark(buf, ns, selection.end_line - 1, #last_line, {})
 
     return {
         top_mark = top_mark,
@@ -61,7 +63,13 @@ function M.replace_between_marks(buf, selection, marks, replacement)
         start_row = selection.start_line - 1
         end_row = selection.end_line
     else
-        start_row = top_pos[1] + 1
+        if selection.start_line <= 1 then
+            -- Top mark is ON the first line, so it IS the start row
+            start_row = top_pos[1]
+        else
+            -- Top mark is on the line ABOVE, so start row is one below it
+            start_row = top_pos[1] + 1
+        end
         end_row = bottom_pos[1] + 1
     end
 

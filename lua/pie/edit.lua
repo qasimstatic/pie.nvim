@@ -17,18 +17,20 @@ local M = {}
 ---@type PieRequest?
 local current_request = nil
 
----Reset the current request state
+---Reset the current request state — safe to call multiple times
 local function reset_request()
     if not current_request then return end
-    
+
     ui.close_float(current_request.float)
     ui.clear_spinner(current_request.spinner)
     marks.clear_marks(current_request.source_buf, current_request.marks)
-    
+
     if current_request.handle then
-        current_request.handle:kill(9)
+        pcall(function()
+            current_request.handle:kill(9)
+        end)
     end
-    
+
     current_request = nil
 end
 
@@ -76,18 +78,19 @@ local function submit_edit()
 
     local lines = vim.api.nvim_buf_get_lines(req.float.buf, 0, -1, false)
     local instruction = table.concat(lines, "\n")
-    
+
     if instruction:match("^%s*$") then
         reset_request()
         return
     end
 
+    -- Close float BEFORE starting spinner (float cleanup is independent)
     ui.close_float(req.float)
-    req.float = nil -- Prevents double close
+    req.float = nil
 
     local prompt = build_prompt(req, instruction)
-    
-    -- Start spinner using the top mark
+
+    -- Start spinner
     if req.marks then
         req.spinner = ui.start_spinner(req.source_buf, req.selection, req.marks.top_mark)
     end
@@ -97,7 +100,6 @@ local function submit_edit()
         require("pie").config.system_prompt,
         function(result)
             vim.schedule(function()
-                ui.clear_spinner(req.spinner)
                 if result and result ~= "" and req.marks then
                     marks.replace_between_marks(req.source_buf, req.selection, req.marks, result)
                 end
@@ -137,7 +139,7 @@ function M.request()
     }
 
     current_request.marks = marks.place_marks(buf, selection)
-    
+
     current_request.float = ui.create_float(submit_edit, function()
         reset_request()
     end)

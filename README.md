@@ -61,7 +61,7 @@ use {
 Default values shown:
 
 ```lua
-require("pie.nvim").setup({
+require("pie").setup({
     -- Path to the pi binary (must be in PATH or set explicitly)
     cmd = "pi",
 
